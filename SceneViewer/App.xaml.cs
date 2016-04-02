@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SceneViewerNamespace
+namespace WpfApplication1
 {
   /// <summary>
   /// Interaction logic for App.xaml

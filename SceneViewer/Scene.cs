@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace SceneViewerNamespace
+namespace WpfApplication1
 {
   [Serializable]
   public class Scene

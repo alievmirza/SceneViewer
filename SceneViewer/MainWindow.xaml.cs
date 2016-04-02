@@ -7,21 +7,18 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
 using Cursors = System.Windows.Input.Cursors;
-using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Image = System.Windows.Controls.Image;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using Label = System.Windows.Forms.Label;
 using Point = System.Windows.Point;
 using TextBox = System.Windows.Forms.TextBox;
 using ToolBar = System.Windows.Controls.ToolBar;
-using ToolTip = System.Windows.Controls.ToolTip;
 
-namespace SceneViewerNamespace
+namespace WpfApplication1
 {
   /// <summary>
   /// Interaction logic for MainWindow.xaml
@@ -42,7 +39,10 @@ namespace SceneViewerNamespace
     private DirectionToolTipHandler _rightButtonHandler;
     private DirectionToolTipHandler _upButtonHandler;
     private DirectionToolTipHandler _downButtonHandler;
-    private bool _isSearchForNavigation;
+
+    private readonly NavigationToolTipHandlerFactory _navigationHandlerFactory;
+    private readonly ToolTipHandlerFactory _handlerFactory;
+    private ToolTipHandlerFactory _currentToolTipFactory;
 
     public MainWindow()
     {
@@ -85,6 +85,13 @@ namespace SceneViewerNamespace
       CreateRightToolTip.Click += OnCreateRightToolTip;
       CreateDownToolTip.Click += OnCreateDownToolTip;
       CreateUpToolTip.Click += OnCreateUpToolTip;
+
+      MainImage.MouseLeftButtonDown += OnMouseLeftButtonPressed;
+      MainImage.MouseLeftButtonUp += OnMouseLeftButtonReleased;
+
+      _navigationHandlerFactory = new NavigationToolTipHandlerFactory();
+      _handlerFactory = new ToolTipHandlerFactory();
+      _currentToolTipFactory = null;
     }
 
     private void OnCreateUpToolTip(object sender, RoutedEventArgs e)
@@ -197,14 +204,12 @@ namespace SceneViewerNamespace
 
     private void OnCreateNavigationToolTip(object sender, RoutedEventArgs e)
     {
-      MainImage.MouseLeftButtonDown += OnMouseLeftButtonPressed;
-      _isSearchForNavigation = true;
+      _currentToolTipFactory = _navigationHandlerFactory;
     }
 
     private void OnCreateContextToolTip(object sender, RoutedEventArgs e)
     {
-      MainImage.MouseLeftButtonDown += OnMouseLeftButtonPressed;
-      _isSearchForNavigation = false;
+      _currentToolTipFactory = _handlerFactory;
     }
 
     private void OnOpenSceneButtonClick(object sender, RoutedEventArgs e)
@@ -259,6 +264,7 @@ namespace SceneViewerNamespace
 
     private void LoadScene(Scene scene)
     {
+      ClearScene();
       _lastSelectedPath = scene.Location;
 
       if (!File.Exists(scene.MediaLink) ||
@@ -270,9 +276,14 @@ namespace SceneViewerNamespace
       var image = new BitmapImage(new Uri(scene.MediaLink));
 
       if (scene.ToolTipHandlers != null)
-        foreach (var tooltipButton in scene.ToolTipHandlers)
+        foreach (var toolTipHandler in scene.ToolTipHandlers)
         {
-          AddTooltipButton(tooltipButton);
+          var button = toolTipHandler.GetTooltipButton(MainImage, MainGrid, _buttons, _buttonsHandlers);
+          toolTipHandler.RegisterResponse(button, LoadScene);
+          MainGrid.Children.Add(button);
+
+          _buttons.Add(button);
+          _buttonsHandlers.Add(toolTipHandler);
         }
 
       _leftButtonHandler = scene.LeftButtonHandler;
@@ -366,19 +377,26 @@ namespace SceneViewerNamespace
       var image = sender as Image;
       if (image == null)
         return;
+
+      if (_currentToolTipFactory == null)
+        return;
+
       MainImage.Cursor = Cursors.Hand;
-      MainImage.MouseLeftButtonDown -= OnMouseLeftButtonPressed;
       _startPositionOfMouseClick = mouseButtonEventArgs.GetPosition(image);
-      image.MouseLeftButtonUp += OnMouseLeftButtonReleased;
     }
 
     private void OnMouseLeftButtonReleased(object sender, MouseButtonEventArgs mouseButtonEventArgs)
     {
       var image = sender as Image;
+      if (image == null)
+        return;
+
+      if (_currentToolTipFactory == null)
+        return;
+
       MainImage.Cursor = Cursors.Arrow;
       CreateNewToolTip(image, _startPositionOfMouseClick, mouseButtonEventArgs.GetPosition(image));
-      MainImage.MouseRightButtonUp -= OnMouseLeftButtonReleased;
-      _isSearchForNavigation = false;
+      _currentToolTipFactory = null;
     }
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -463,7 +481,7 @@ namespace SceneViewerNamespace
       Application.Current.Shutdown();
     }
 
-    private void OpenFile(string path)
+    private void OpenImage(string path)
     {
       if (!(path.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
             || path.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
@@ -488,7 +506,7 @@ namespace SceneViewerNamespace
       // OK button was pressed.
       if (result == System.Windows.Forms.DialogResult.OK)
       {
-        OpenFile(openFileDialog.FileName);
+        OpenImage(openFileDialog.FileName);
       }
     }
 
@@ -515,21 +533,10 @@ namespace SceneViewerNamespace
 
     private void CreateNewToolTip(Image image, Point startPosition, Point endPosition)
     {
-      var imagePosition = image.TransformToAncestor(MainGrid).Transform(new Point(0, 0));
       var startX = Math.Min(startPosition.X, endPosition.X);
       var startY = Math.Min(startPosition.Y, endPosition.Y);
       var lengthX = Math.Abs(endPosition.X - startPosition.X);
       var lengthY = Math.Abs(endPosition.Y - startPosition.Y);
-
-      var button = new Button
-      {
-        Width = lengthX,
-        Height = lengthY,
-        Opacity = 0.3,
-        VerticalAlignment = VerticalAlignment.Top,
-        HorizontalAlignment = HorizontalAlignment.Left,
-        Margin = new Thickness(imagePosition.X + startX, imagePosition.Y + startY, 0, 0)
-      };
 
       var openFileDialog = new OpenFileDialog
       {
@@ -545,96 +552,19 @@ namespace SceneViewerNamespace
 
       // Display the openFile dialog.
       DialogResult result = openFileDialog.ShowDialog();
-      Scene scene = null;
       // OK button was pressed.
       if (result == System.Windows.Forms.DialogResult.OK)
       {
-        scene = Scene.GetSceneByPath(openFileDialog.FileName);
+        var tooltipHandler = _currentToolTipFactory.GetTooltipHandler(openFileDialog.FileName,
+          new Point(startX/image.ActualWidth, startY/image.ActualHeight),
+          new Point(lengthX/image.ActualWidth, lengthY/image.ActualHeight));
+        var button = tooltipHandler.GetTooltipButton(image, MainGrid, _buttons, _buttonsHandlers);
+        _buttonsHandlers.Add(tooltipHandler);
+        tooltipHandler.RegisterResponse(button, LoadScene);
+        _buttons.Add(button);
+
+        MainGrid.Children.Add(button);
       }
-
-      if (!_isSearchForNavigation)
-      {
-        ToolTipService.SetInitialShowDelay(button, 0);
-        ToolTipService.SetShowDuration(button, 300000);
-
-        button.ToolTip = InitializeTooltipWithScene(scene);
-      }
-      _buttons.Add(button);
-
-      _buttonsHandlers.Add(new ToolTipHandler()
-      {
-        SceneLocation = scene != null ? openFileDialog.FileName : "",
-        RelativeLocation = new Point(startX/image.ActualWidth, startY/image.ActualHeight),
-        RelativeSize = new Point(lengthX/image.ActualWidth, lengthY/image.ActualHeight)
-      });
-      MainGrid.Children.Add(button);
-    }
-
-    private ToolTip InitializeTooltipWithHandler(ToolTipHandler handler)
-    {
-      var scene = Scene.GetSceneByPath(handler.SceneLocation);
-      return InitializeTooltipWithScene(scene);
-    }
-
-    //TODO: make tooltip beautiful
-    private ToolTip InitializeTooltipWithScene(Scene scene)
-    {
-      var grid = new Grid();
-      var tooltip = new ToolTip
-      {
-        Background = Brushes.White,
-        Height = 100,
-        Width = 100
-      };
-
-      if (scene == null)
-        return tooltip;
-
-      if (scene.MediaLink == null || !File.Exists(scene.MediaLink) ||
-          (!scene.MediaLink.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) &&
-           (!scene.MediaLink.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)) &&
-           (!scene.MediaLink.EndsWith(".png", StringComparison.OrdinalIgnoreCase))))
-        return tooltip;
-
-      var image = new Image {Source = new BitmapImage(new Uri(scene.MediaLink))};
-      grid.Children.Add(new TextBlock()
-      {
-        Text = scene.Header
-      });
-      grid.Children.Add(new TextBlock()
-      {
-        Text = scene.Text
-      });
-      grid.Children.Add(image);
-      tooltip.Content = grid;
-      return tooltip;
-    }
-
-    private void AddTooltipButton(ToolTipHandler tooltipHandler)
-    {
-      var button = new Button
-      {
-        Width = MainImage.ActualWidth*tooltipHandler.RelativeSize.X,
-        Height = MainImage.ActualHeight*tooltipHandler.RelativeSize.Y,
-        Opacity = 0.3,
-        VerticalAlignment = VerticalAlignment.Top,
-        HorizontalAlignment = HorizontalAlignment.Left
-      };
-
-      var imagePosition = MainImage.TransformToAncestor(MainGrid).Transform(new Point(0, 0));
-
-      button.Margin = new Thickness(imagePosition.X + MainImage.ActualWidth*tooltipHandler.RelativeLocation.X,
-        imagePosition.Y + MainImage.ActualHeight*tooltipHandler.RelativeLocation.Y, 0, 0);
-
-      if (!_isSearchForNavigation)
-      {
-        ToolTipService.SetInitialShowDelay(button, 0);
-        ToolTipService.SetShowDuration(button, 300000);
-        button.ToolTip = InitializeTooltipWithHandler(tooltipHandler);
-      }
-      _buttons.Add(button);
-      _buttonsHandlers.Add(tooltipHandler);
-      MainGrid.Children.Add(button);
     }
   }
 
