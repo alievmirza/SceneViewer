@@ -1,42 +1,99 @@
-﻿<Window x:Class="WpfApplication1.MainWindow"
+﻿<Window x:Class="SceneViewerNamespace.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525"
         x:Name ="ApplicationMainWindow">
-    <Grid x:Name="MainGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Image x:Name="MainImage" Margin="0,10,0,-10">
-            <Image.Resources>
-                <ResourceDictionary>
-                    <TextBlock x:Key="CursorGrabbing" Cursor="CustomResources/grabbing.cur"/>
-                </ResourceDictionary>
-            </Image.Resources>
+    <Grid x:Name="MainGrid">
+        <Image x:Name="MainImage" Margin="0,27.96,0,-10">
         </Image>
-        <RepeatButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="59,263,0,0" x:Name="LeftButton" Content="Left">
-            <!--<RepeatButton.Resources>
-                <Image x:Key="LeftArrow" Source ="LeftArrow.png"/>
-            </RepeatButton.Resources>
-            <ContentControl Content="{StaticResource LeftArrow}"></ContentControl>-->
+        <RepeatButton HorizontalAlignment="Left" VerticalAlignment="Center" Width="75" Margin="10,10,10,10" x:Name="LeftButton" Content="Left">
         </RepeatButton>
-        <RepeatButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="374,263,0,0" x:Name="RightButton" Content="Right">
-            <!--<RepeatButton.Resources>
-                <Image x:Key="RightArrow" Source ="RightArrow.png"/>
-            </RepeatButton.Resources>
-            <ContentControl Content="{StaticResource RightArrow}"></ContentControl>-->
+        <RepeatButton HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Margin="10,10,10,10" x:Name="RightButton" Content="Right">
+        </RepeatButton>
+        <RepeatButton HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="0,27.96,0,0" x:Name="UpButton" Content="Up">
+        </RepeatButton>
+        <RepeatButton HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="75" Margin="10,10,10,10" x:Name="DownButton" Content="Down">
         </RepeatButton>
         <ToolBar VerticalAlignment="Top" ToolBarTray.IsLocked ="True" x:Name="MainToolBar" OverflowMode="Never">
             <Menu ToolBar.OverflowMode="Never">
                 <MenuItem Header="Menu">
-                    <MenuItem x:Name = "OpenButton">
+                    <MenuItem x:Name = "OpenImageButton">
                         <MenuItem.Template>
                             <ControlTemplate>
-                                <Label>Open</Label>
+                                <Label>Open Image</Label>
                             </ControlTemplate>
                         </MenuItem.Template>
                     </MenuItem>
+                    
+                    <MenuItem x:Name = "SaveSceneButton">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Save Scene</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name = "OpenSceneButton">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Load Scene</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+                    
                     <MenuItem x:Name ="ExitButton">
                         <MenuItem.Template>
                             <ControlTemplate>
                                 <Label>Exit</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="ToolTips">
+                    <MenuItem x:Name = "CreateContextToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create Context ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name = "CreateNavigationToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create Navigation ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name = "CreateDownToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Down' ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name ="CreateUpToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Up' ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name = "CreateRightToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Right' ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name ="CreateLeftToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Left' ToolTip</Label>
                             </ControlTemplate>
                         </MenuItem.Template>
                     </MenuItem>
