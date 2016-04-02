@@ -270,7 +270,8 @@ namespace WpfApplication1
       if (!File.Exists(scene.MediaLink) ||
           !(scene.MediaLink.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
             || scene.MediaLink.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-            || scene.MediaLink.EndsWith("png", StringComparison.OrdinalIgnoreCase)))
+            || scene.MediaLink.EndsWith("png", StringComparison.OrdinalIgnoreCase)
+            || scene.MediaLink.EndsWith("gif", StringComparison.OrdinalIgnoreCase)))
         return;
 
       var image = new BitmapImage(new Uri(scene.MediaLink));
@@ -485,7 +486,8 @@ namespace WpfApplication1
     {
       if (!(path.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
             || path.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith("png", StringComparison.OrdinalIgnoreCase)))
+            || path.EndsWith("png", StringComparison.OrdinalIgnoreCase)
+            || path.EndsWith("gif", StringComparison.OrdinalIgnoreCase)))
         return;
 
       var image = new BitmapImage(new Uri(path));

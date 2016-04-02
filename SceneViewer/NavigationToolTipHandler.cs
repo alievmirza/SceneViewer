@@ -25,6 +25,13 @@ namespace WpfApplication1
       button.Margin = new Thickness(imagePosition.X + mainImage.ActualWidth * RelativeLocation.X,
         imagePosition.Y + mainImage.ActualHeight * RelativeLocation.Y, 0, 0);
 
+      var scene = Scene.GetSceneByPath(SceneLocation);
+
+      ToolTipService.SetInitialShowDelay(button, 0);
+      ToolTipService.SetShowDuration(button, 300000);
+
+      button.ToolTip = scene != null ? scene.Header : "";
+
       return button;
     }
 

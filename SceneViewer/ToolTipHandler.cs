@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using Brushes = System.Windows.Media.Brushes;
+using Button = System.Windows.Controls.Button;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using Image = System.Windows.Controls.Image;
+using Point = System.Windows.Point;
+using ToolTip = System.Windows.Controls.ToolTip;
 
 namespace WpfApplication1
 {
@@ -47,20 +51,29 @@ namespace WpfApplication1
       {
         grid.Children.Add(new TextBlock()
         {
-          Text = scene.Header
+          Text = scene.Header,
+          VerticalAlignment = VerticalAlignment.Top
         });
         grid.Children.Add(new TextBlock()
         {
-          Text = scene.Text
+          Text = scene.Text,
+          VerticalAlignment = VerticalAlignment.Center
         });
-        if (scene.MediaLink != null && File.Exists(scene.MediaLink) &&
-            (scene.MediaLink.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-             (scene.MediaLink.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)) ||
-             (scene.MediaLink.EndsWith(".png", StringComparison.OrdinalIgnoreCase))))
+        if (scene.MediaLink != null)
         {
-          var image = new Image {Source = new BitmapImage(new Uri(scene.MediaLink))};
-
-          grid.Children.Add(image);
+          if (File.Exists(scene.MediaLink) &&
+            (scene.MediaLink.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+             scene.MediaLink.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+             scene.MediaLink.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+             scene.MediaLink.EndsWith(".gif", StringComparison.OrdinalIgnoreCase)))
+          {
+            MediaElement mediaElement = new MediaElement()
+            {
+              Source = new Uri(scene.MediaLink),
+              VerticalAlignment = VerticalAlignment.Bottom
+            };
+            grid.Children.Add(mediaElement);
+          }
         }
       }
       tooltip.Content = grid;
