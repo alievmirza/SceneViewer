@@ -6,7 +6,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
@@ -17,6 +19,7 @@ using Label = System.Windows.Forms.Label;
 using Point = System.Windows.Point;
 using TextBox = System.Windows.Forms.TextBox;
 using ToolBar = System.Windows.Controls.ToolBar;
+using ToolTip = System.Windows.Controls.ToolTip;
 
 namespace WpfApplication1
 {
@@ -29,7 +32,7 @@ namespace WpfApplication1
     private List<ToolTipHandler> _buttonsHandlers;
 
     //constants for width and height of button
-    private double _buttonWidthConstant = 0.2;
+    private double _buttonWidthConstant = 0.1;
     private double _buttonHeightConstant = 0.1;
 
     //last selected path of pictures
@@ -41,8 +44,8 @@ namespace WpfApplication1
     private DirectionToolTipHandler _downButtonHandler;
 
     private readonly NavigationToolTipHandlerFactory _navigationHandlerFactory;
-    private readonly ToolTipHandlerFactory _handlerFactory;
-    private ToolTipHandlerFactory _currentToolTipFactory;
+    private readonly ToolTipHandler.ToolTipHandlerFactory _handlerFactory;
+    private ToolTipHandler.ToolTipHandlerFactory _currentToolTipFactory;
 
     public MainWindow()
     {
@@ -74,6 +77,8 @@ namespace WpfApplication1
       RightButton.Visibility = Visibility.Hidden;
       UpButton.Visibility = Visibility.Hidden;
       DownButton.Visibility = Visibility.Hidden;
+       
+      
 
       MainImage.Focus();
       MainGrid.SizeChanged += OnSizeChanged; //resize buttons
@@ -90,10 +95,8 @@ namespace WpfApplication1
       MainImage.MouseLeftButtonUp += OnMouseLeftButtonReleased;
 
       _navigationHandlerFactory = new NavigationToolTipHandlerFactory();
-      _handlerFactory = new ToolTipHandlerFactory();
+      _handlerFactory = new ToolTipHandler.ToolTipHandlerFactory();
       _currentToolTipFactory = null;
-
-      OpenImage("D:\\Data\\Documents\\Visual Studio 2013\\Projects\\SceneViewer\\SceneViewer\\Data\\Example\\SceneData\\0.jpg");
     }
 
     private void OnCreateUpToolTip(object sender, RoutedEventArgs e)
@@ -405,11 +408,20 @@ namespace WpfApplication1
       if (Math.Abs(e.PreviousSize.Height) < 0.000001 || Math.Abs(e.PreviousSize.Width) < 0.000001)
         return;
 
-      foreach (var button in _buttons)
-      {
-        button.Width = button.ActualWidth*e.NewSize.Width/e.PreviousSize.Width;
-        button.Height = button.ActualHeight*e.NewSize.Height/e.PreviousSize.Height;
-      }
+        foreach (var button in _buttons)
+        {
+            button.Width = button.ActualWidth*e.NewSize.Width/e.PreviousSize.Width;
+            button.Height = button.ActualHeight*e.NewSize.Height/e.PreviousSize.Height;
+            var buttonAsToolTip = ((System.Windows.Controls.ToolTip) button.ToolTip);
+            buttonAsToolTip.Width = buttonAsToolTip.Width*e.NewSize.Width/
+                                                                       e.PreviousSize.Width;
+            buttonAsToolTip.Height = buttonAsToolTip.Height * e.NewSize.Height / e.PreviousSize.Height;
+            var grid = ((System.Windows.Controls.Grid) buttonAsToolTip.Content);
+            grid.Width = grid.Width * e.NewSize.Width /e.PreviousSize.Width;
+
+            grid.Height = grid.Height * e.NewSize.Width /e.PreviousSize.Width;
+            
+            }
     }
 
     private void OnMouseLeftButtonPressed(object sender, MouseButtonEventArgs mouseButtonEventArgs)
@@ -444,13 +456,13 @@ namespace WpfApplication1
       var width = e.NewSize.Width;
       var height = e.NewSize.Height;
       LeftButton.Width = width*_buttonWidthConstant;
-      LeftButton.Height = height*_buttonHeightConstant;
+      LeftButton.Height = width * _buttonHeightConstant;
       RightButton.Width = width*_buttonWidthConstant;
-      RightButton.Height = height*_buttonHeightConstant;
+      RightButton.Height = width * _buttonHeightConstant;
       UpButton.Width = width*_buttonWidthConstant;
-      UpButton.Height = height*_buttonHeightConstant;
+      UpButton.Height = width * _buttonHeightConstant;
       DownButton.Width = width*_buttonWidthConstant;
-      DownButton.Height = height*_buttonHeightConstant;
+      DownButton.Height = width * _buttonHeightConstant;
 
       var imagePosition = MainImage.TransformToAncestor(MainGrid).Transform(new Point(0, 0));
 

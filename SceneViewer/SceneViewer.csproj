@@ -92,7 +92,17 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="resources\black-right-arrow-pv.png" />
+    <Resource Include="resources\down-arrow.png" />
+    <Resource Include="resources\down.png" />
+    <Resource Include="resources\left-arrow.png" />
+    <Resource Include="resources\left.png" />
+    <Resource Include="resources\right-arrow.png" />
+    <Resource Include="resources\right.png" />
+    <Resource Include="resources\up-arrow.png" />
+    <Resource Include="resources\up.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -4,16 +4,33 @@
         Title="MainWindow" Height="350" Width="525"
         x:Name ="ApplicationMainWindow">
     <Grid x:Name="MainGrid">
-        <Image x:Name="MainImage" Margin="0,27.96,0,-10">
+
+
+        
+        <Image x:Name="MainImage" Margin="1.745,27.96,-1.745,-10">
         </Image>
-        <RepeatButton HorizontalAlignment="Left" VerticalAlignment="Center" Width="75" Margin="10,10,10,10" x:Name="LeftButton" Content="Left">
-        </RepeatButton>
-        <RepeatButton HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Margin="10,10,10,10" x:Name="RightButton" Content="Right">
-        </RepeatButton>
-        <RepeatButton HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="0,27.96,0,0" x:Name="UpButton" Content="Up">
-        </RepeatButton>
-        <RepeatButton HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="75" Margin="10,10,10,10" x:Name="DownButton" Content="Down">
-        </RepeatButton>
+        
+        <Button HorizontalAlignment="Center" VerticalAlignment="Top" Width="50" Margin="0,27.96,0,0" x:Name="UpButton" >
+            <Image Source="resources/up-arrow.png" Height="40" Width="40">
+            </Image>
+        </Button>
+        
+        <Button HorizontalAlignment="Left" VerticalAlignment="Center" Width="50" Height ="50"  Margin="10,10,10,10" x:Name="LeftButton" >
+            <Image Source="resources/left-arrow.png" Height="40" Width="40">
+            </Image>
+        </Button>
+
+        <Button  HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Margin="10,10,10,10" x:Name="RightButton">
+            <Image Source="resources/right-arrow.png" Height="40" Width="40">
+            </Image>
+        </Button>
+
+        <Button  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="75" Margin="10,10,10,10" x:Name="DownButton">
+            <Image Source="resources/down-arrow.png" Height="40" Width="40">
+            </Image>
+        </Button>
+
+
         <ToolBar VerticalAlignment="Top" ToolBarTray.IsLocked ="True" x:Name="MainToolBar" OverflowMode="Never">
             <Menu ToolBar.OverflowMode="Never">
                 <MenuItem Header="Menu">
@@ -24,7 +41,7 @@
                             </ControlTemplate>
                         </MenuItem.Template>
                     </MenuItem>
-                    
+
                     <MenuItem x:Name = "SaveSceneButton">
                         <MenuItem.Template>
                             <ControlTemplate>
@@ -40,7 +57,7 @@
                             </ControlTemplate>
                         </MenuItem.Template>
                     </MenuItem>
-                    
+
                     <MenuItem x:Name ="ExitButton">
                         <MenuItem.Template>
                             <ControlTemplate>
@@ -101,5 +118,5 @@
             </Menu>
         </ToolBar>
     </Grid>
-    
+
 </Window>

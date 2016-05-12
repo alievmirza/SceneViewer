@@ -69,7 +69,7 @@ namespace WpfApplication1
     }
   }
 
-  public class NavigationToolTipHandlerFactory : ToolTipHandlerFactory
+  public class NavigationToolTipHandlerFactory : ToolTipHandler.ToolTipHandlerFactory
   {
     public override ToolTipHandler GetTooltipHandler(string sceneLocation, Point relativeLocation, Point relativeSize)
     {

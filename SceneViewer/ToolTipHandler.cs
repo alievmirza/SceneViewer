@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Brushes = System.Windows.Media.Brushes;
 using Button = System.Windows.Controls.Button;
@@ -12,6 +15,7 @@ using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
 using ToolTip = System.Windows.Controls.ToolTip;
+using Label = System.Windows.Controls.Label;
 
 namespace WpfApplication1
 {
@@ -42,53 +46,86 @@ namespace WpfApplication1
       ToolTipService.SetInitialShowDelay(button, 0);
       ToolTipService.SetShowDuration(button, 300000);
       var scene = Scene.GetSceneByPath(SceneLocation);
-      var grid = new Grid();
+
       var tooltip = new ToolTip
       {
         Background = Brushes.White,
-        Height = 100,
-        Width = 100
+        Width = mainImage.ActualWidth/2,
+        Height = mainImage.ActualHeight/2,
       };
+
+      var grid = new Grid();
+      grid.Width = tooltip.Width;
+      grid.Height = tooltip.Height;
+      ColumnDefinition gridCol1 = new ColumnDefinition();
+
+      RowDefinition gridRow1 = new RowDefinition();
+      RowDefinition gridRow2 = new RowDefinition();
+      RowDefinition gridRow3 = new RowDefinition();
+
+      gridRow1.Height = new GridLength(grid.Height*0.10);
+
+      grid.RowDefinitions.Add(gridRow1);
+      grid.RowDefinitions.Add(gridRow2);
+      grid.RowDefinitions.Add(gridRow3);
+      grid.ColumnDefinitions.Add(gridCol1);
 
       if (scene != null)
       {
-        //grid.Children.Add(new TextBlock()
-        //{
-        //  Text = scene.Header,
-        //  VerticalAlignment = VerticalAlignment.Top
-        //});
-        //grid.Children.Add(new TextBlock()
-        //{
-        //  Text = scene.Text,
-        //  VerticalAlignment = VerticalAlignment.Center
-        //});
+        TextBlock headBlock = new TextBlock();
+        headBlock.Text = scene.Header;
+        headBlock.FontSize = 14;
+        headBlock.FontWeight = FontWeights.Bold;
+        headBlock.VerticalAlignment = VerticalAlignment.Top;
+        Grid.SetRow(headBlock, 0);
+        Grid.SetColumn(headBlock, 0);
+        grid.Children.Add(headBlock);
+
+
+        TextBlock textBlock = new TextBlock();
+        textBlock.Text = scene.Text;
+        textBlock.FontSize = 10;
+        textBlock.FontWeight = FontWeights.Bold;
+        textBlock.VerticalAlignment = VerticalAlignment.Stretch;
+        textBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
+        textBlock.TextWrapping = 0;
+        Grid.SetRow(textBlock, 1);
+        Grid.SetColumn(textBlock, 0);
+        grid.Children.Add(textBlock);
+
         if (scene.MediaLink != null)
         {
-          var mediaPath = PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, scene.MediaLink);
-          if (File.Exists(mediaPath) &&
-              (mediaPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-               mediaPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-               mediaPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)))
-          {
-            var image = new Image
-            {
-              Source = new BitmapImage(new Uri(mediaPath))
-            };
-            grid.Children.Add(image);
-          }
+          var path = PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, scene.MediaLink);
 
-          if (mediaPath.EndsWith(".gif", StringComparison.OrdinalIgnoreCase))
+          if (File.Exists(path) &&
+              (path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+               path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+               path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+               path.EndsWith(".gif", StringComparison.OrdinalIgnoreCase)))
           {
             MediaElement mediaElement = new MediaElement()
             {
-              Source = new Uri(scene.MediaLink)
+              Source = new Uri(path),
+              HorizontalAlignment = HorizontalAlignment.Stretch,
+              VerticalAlignment = VerticalAlignment.Stretch,
             };
+            MediaTimeline mediaTimeline = new MediaTimeline()
+            {
+              Source = new Uri(path)
+            };
+
+            Grid.SetRow(mediaElement, 1);
+            Grid.SetColumn(mediaElement, 0);
+            Grid.SetRowSpan(mediaElement, 2);
             grid.Children.Add(mediaElement);
           }
         }
       }
+
+
       tooltip.Content = grid;
       button.ToolTip = tooltip;
+
       return button;
     }
 
@@ -114,18 +151,18 @@ namespace WpfApplication1
 
       return handler;
     }
-  }
 
-  public class ToolTipHandlerFactory
-  {
-    public virtual ToolTipHandler GetTooltipHandler(string sceneLocation, Point relativeLocation, Point relativeSize)
+    public class ToolTipHandlerFactory
     {
-      return new ToolTipHandler()
+      public virtual ToolTipHandler GetTooltipHandler(string sceneLocation, Point relativeLocation, Point relativeSize)
       {
-        RelativeLocation = relativeLocation,
-        RelativeSize = relativeSize,
-        SceneLocation = sceneLocation
-      };
+        return new ToolTipHandler()
+        {
+          RelativeLocation = relativeLocation,
+          RelativeSize = relativeSize,
+          SceneLocation = sceneLocation
+        };
+      }
     }
   }
 }
