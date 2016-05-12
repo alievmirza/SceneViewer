@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Controls;
 
 namespace WpfApplication1
@@ -14,6 +15,23 @@ namespace WpfApplication1
 
     public override void RegisterResponse(Button button, MyResponse response)
     {
+    }
+
+    public override IToolTipHandler CreateCopy(string sceneLocation = null)
+    {
+      var handler = new DirectionToolTipHandler();
+
+      if (sceneLocation == null)
+      {
+        handler.SceneLocation = SceneLocation;
+      }
+      else
+      {
+        var nextSceneUri = new Uri(PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, SceneLocation));
+        var referenceUri = new Uri(sceneLocation);
+        handler.SceneLocation = referenceUri.MakeRelativeUri(nextSceneUri).ToString();
+      }
+      return handler;
     }
   }
 }

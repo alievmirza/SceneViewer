@@ -33,7 +33,7 @@ namespace WpfApplication1
     private double _buttonHeightConstant = 0.1;
 
     //last selected path of pictures
-    private string _lastSelectedPath;
+    public static string CurrentSceneLocation;
     private Point _startPositionOfMouseClick;
     private DirectionToolTipHandler _leftButtonHandler;
     private DirectionToolTipHandler _rightButtonHandler;
@@ -92,10 +92,15 @@ namespace WpfApplication1
       _navigationHandlerFactory = new NavigationToolTipHandlerFactory();
       _handlerFactory = new ToolTipHandlerFactory();
       _currentToolTipFactory = null;
+
+      OpenImage("D:\\Data\\Documents\\Visual Studio 2013\\Projects\\SceneViewer\\SceneViewer\\Data\\Example\\SceneData\\0.jpg");
     }
 
     private void OnCreateUpToolTip(object sender, RoutedEventArgs e)
     {
+      if (CurrentSceneLocation == null)
+        return;
+
       var openFileDialog = new OpenFileDialog
       {
         DefaultExt = ".sc",
@@ -103,9 +108,9 @@ namespace WpfApplication1
       };
       // Default file extension
       // Filter files by extension
-      if (_lastSelectedPath != null && Directory.Exists(_lastSelectedPath))
+      if (CurrentSceneLocation != null && File.Exists(CurrentSceneLocation))
       {
-        openFileDialog.FileName = _lastSelectedPath;
+        openFileDialog.FileName = CurrentSceneLocation;
       }
 
       // Display the openFile dialog.
@@ -113,9 +118,11 @@ namespace WpfApplication1
       // OK button was pressed.
       if (result == System.Windows.Forms.DialogResult.OK)
       {
+        var fileUri = new Uri(CurrentSceneLocation);
+        var referenceUri = new Uri(openFileDialog.FileName);
         _upButtonHandler = new DirectionToolTipHandler()
         {
-          SceneLocation = openFileDialog.FileName
+          SceneLocation = fileUri.MakeRelativeUri(referenceUri).ToString()
         };
         UpButton.Visibility = Visibility.Visible;
       }
@@ -123,6 +130,9 @@ namespace WpfApplication1
 
     private void OnCreateDownToolTip(object sender, RoutedEventArgs e)
     {
+      if (CurrentSceneLocation == null)
+        return;
+
       var openFileDialog = new OpenFileDialog
       {
         DefaultExt = ".sc",
@@ -130,9 +140,9 @@ namespace WpfApplication1
       };
       // Default file extension
       // Filter files by extension
-      if (_lastSelectedPath != null && Directory.Exists(_lastSelectedPath))
+      if (CurrentSceneLocation != null && File.Exists(CurrentSceneLocation))
       {
-        openFileDialog.FileName = _lastSelectedPath;
+        openFileDialog.FileName = CurrentSceneLocation;
       }
 
       // Display the openFile dialog.
@@ -140,9 +150,11 @@ namespace WpfApplication1
       // OK button was pressed.
       if (result == System.Windows.Forms.DialogResult.OK)
       {
+        var fileUri = new Uri(CurrentSceneLocation);
+        var referenceUri = new Uri(openFileDialog.FileName);
         _downButtonHandler = new DirectionToolTipHandler()
         {
-          SceneLocation = openFileDialog.FileName
+          SceneLocation = fileUri.MakeRelativeUri(referenceUri).ToString()
         };
         DownButton.Visibility = Visibility.Visible;
       }
@@ -150,6 +162,9 @@ namespace WpfApplication1
 
     private void OnCreateRightToolTip(object sender, RoutedEventArgs e)
     {
+      if (CurrentSceneLocation == null)
+        return;
+
       var openFileDialog = new OpenFileDialog
       {
         DefaultExt = ".sc",
@@ -157,9 +172,9 @@ namespace WpfApplication1
       };
       // Default file extension
       // Filter files by extension
-      if (_lastSelectedPath != null && Directory.Exists(_lastSelectedPath))
+      if (CurrentSceneLocation != null && File.Exists(CurrentSceneLocation))
       {
-        openFileDialog.FileName = _lastSelectedPath;
+        openFileDialog.FileName = CurrentSceneLocation;
       }
 
       // Display the openFile dialog.
@@ -167,9 +182,11 @@ namespace WpfApplication1
       // OK button was pressed.
       if (result == System.Windows.Forms.DialogResult.OK)
       {
+        var fileUri = new Uri(CurrentSceneLocation);
+        var referenceUri = new Uri(openFileDialog.FileName);
         _rightButtonHandler = new DirectionToolTipHandler()
         {
-          SceneLocation = openFileDialog.FileName
+          SceneLocation = fileUri.MakeRelativeUri(referenceUri).ToString()
         };
         RightButton.Visibility = Visibility.Visible;
       }
@@ -177,6 +194,9 @@ namespace WpfApplication1
 
     private void OnCreateLeftToolTip(object sender, RoutedEventArgs e)
     {
+      if (CurrentSceneLocation == null)
+        return;
+
       var openFileDialog = new OpenFileDialog
       {
         DefaultExt = ".sc",
@@ -184,9 +204,9 @@ namespace WpfApplication1
       };
       // Default file extension
       // Filter files by extension
-      if (_lastSelectedPath != null && Directory.Exists(_lastSelectedPath))
+      if (CurrentSceneLocation != null && File.Exists(CurrentSceneLocation))
       {
-        openFileDialog.FileName = _lastSelectedPath;
+        openFileDialog.FileName = CurrentSceneLocation;
       }
 
       // Display the openFile dialog.
@@ -194,9 +214,11 @@ namespace WpfApplication1
       // OK button was pressed.
       if (result == System.Windows.Forms.DialogResult.OK)
       {
+        var fileUri = new Uri(CurrentSceneLocation);
+        var referenceUri = new Uri(openFileDialog.FileName);
         _leftButtonHandler = new DirectionToolTipHandler()
         {
-          SceneLocation = openFileDialog.FileName
+          SceneLocation = fileUri.MakeRelativeUri(referenceUri).ToString()
         };
         LeftButton.Visibility = Visibility.Visible;
       }
@@ -215,9 +237,9 @@ namespace WpfApplication1
     private void OnOpenSceneButtonClick(object sender, RoutedEventArgs e)
     {
       var openFileDialog = new OpenFileDialog();
-      if (_lastSelectedPath != null && Directory.Exists(_lastSelectedPath))
+      if (CurrentSceneLocation != null && File.Exists(CurrentSceneLocation))
       {
-        openFileDialog.FileName = _lastSelectedPath;
+        openFileDialog.FileName = CurrentSceneLocation;
       }
 
       // Display the openFile dialog.
@@ -231,8 +253,7 @@ namespace WpfApplication1
           Scene scene = Scene.GetSceneByPath(path);
           if (scene != null)
           {
-            ClearScene();
-            LoadScene(scene);
+            LoadScene(scene, path);
           }
         }
       }
@@ -260,32 +281,25 @@ namespace WpfApplication1
       RightButton.Visibility = Visibility.Hidden;
       UpButton.Visibility = Visibility.Hidden;
       DownButton.Visibility = Visibility.Hidden;
+
+      CurrentSceneLocation = null;
     }
 
-    private void LoadScene(Scene scene)
+    private void LoadScene(Scene scene, string path)
     {
       ClearScene();
-      _lastSelectedPath = scene.Location;
 
-      if (!File.Exists(scene.MediaLink) ||
-          !(scene.MediaLink.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-            || scene.MediaLink.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-            || scene.MediaLink.EndsWith("png", StringComparison.OrdinalIgnoreCase)
-            || scene.MediaLink.EndsWith("gif", StringComparison.OrdinalIgnoreCase)))
+      var absoluteMediaPath = PathHelper.CombinePaths(path, scene.MediaLink);
+
+      if (!File.Exists(absoluteMediaPath) ||
+          !(absoluteMediaPath.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+            || absoluteMediaPath.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+            || absoluteMediaPath.EndsWith("png", StringComparison.OrdinalIgnoreCase)
+            || absoluteMediaPath.EndsWith("gif", StringComparison.OrdinalIgnoreCase)))
         return;
 
-      var image = new BitmapImage(new Uri(scene.MediaLink));
-
-      if (scene.ToolTipHandlers != null)
-        foreach (var toolTipHandler in scene.ToolTipHandlers)
-        {
-          var button = toolTipHandler.GetTooltipButton(MainImage, MainGrid, _buttons, _buttonsHandlers);
-          toolTipHandler.RegisterResponse(button, LoadScene);
-          MainGrid.Children.Add(button);
-
-          _buttons.Add(button);
-          _buttonsHandlers.Add(toolTipHandler);
-        }
+      CurrentSceneLocation = path;
+      var image = new BitmapImage(new Uri(absoluteMediaPath));
 
       _leftButtonHandler = scene.LeftButtonHandler;
       LeftButton.Visibility = _leftButtonHandler == null ? Visibility.Hidden : Visibility.Visible;
@@ -297,6 +311,16 @@ namespace WpfApplication1
       DownButton.Visibility = _downButtonHandler == null ? Visibility.Hidden : Visibility.Visible;
 
       MainImage.Source = image;
+      if (scene.ToolTipHandlers != null)
+        foreach (var toolTipHandler in scene.ToolTipHandlers)
+        {
+          var button = toolTipHandler.GetTooltipButton(MainImage, MainGrid, _buttons, _buttonsHandlers);
+          toolTipHandler.RegisterResponse(button, LoadScene);
+          MainGrid.Children.Add(button);
+
+          _buttons.Add(button);
+          _buttonsHandlers.Add(toolTipHandler);
+        }
     }
 
     private void OnSaveSceneButtonClick(object sender, RoutedEventArgs e)
@@ -325,22 +349,37 @@ namespace WpfApplication1
       }
       var path = dlg.FileName;
 
+
+      var sceneUri = new Uri(dlg.FileName);
+      var mediaUri = ((BitmapImage) MainImage.Source).UriSource;
+      var mediaRelativeUri = sceneUri.MakeRelativeUri(mediaUri);
+
       var scene = new Scene
       {
-        MediaLink = ((BitmapImage) MainImage.Source).UriSource.LocalPath,
+        MediaLink = mediaRelativeUri.ToString(),
         Header = Prompt.ShowDialog("Set description", "Set description"),
         Text = Prompt.ShowDialog("Set text", "Set text"),
-        Location = path,
         ToolTipHandlers = new List<ToolTipHandler>(),
-        LeftButtonHandler = _leftButtonHandler,
-        RightButtonHandler = _rightButtonHandler,
-        UpButtonHandler = _upButtonHandler,
-        DownButtonHandler = _downButtonHandler
+        LeftButtonHandler =
+          _leftButtonHandler != null ? _leftButtonHandler.CreateCopy(dlg.FileName) as DirectionToolTipHandler : null,
+        RightButtonHandler =
+          _rightButtonHandler != null ? _rightButtonHandler.CreateCopy(dlg.FileName) as DirectionToolTipHandler : null,
+        UpButtonHandler =
+          _upButtonHandler != null ? _upButtonHandler.CreateCopy(dlg.FileName) as DirectionToolTipHandler : null,
+        DownButtonHandler =
+          _downButtonHandler != null ? _downButtonHandler.CreateCopy(dlg.FileName) as DirectionToolTipHandler : null
       };
 
       for (var i = 0; i < _buttons.Count; i++)
       {
-        scene.ToolTipHandlers.Add(_buttonsHandlers[i]);
+        var handler = _buttonsHandlers[i];
+
+        var handlerToSave = handler.CreateCopy(dlg.FileName) as ToolTipHandler;
+
+        if (handlerToSave == null)
+          throw new InvalidCastException("handler should be ToolTipHandler");
+
+        scene.ToolTipHandlers.Add(handlerToSave);
       }
 
       FileStream fs = new FileStream(path, FileMode.Create);
@@ -445,8 +484,9 @@ namespace WpfApplication1
     {
       if (_leftButtonHandler != null)
       {
-        var scene = Scene.GetSceneByPath(_leftButtonHandler.SceneLocation);
-        LoadScene(scene);
+        var absoluteScenePath = PathHelper.CombinePaths(CurrentSceneLocation, _leftButtonHandler.SceneLocation);
+        var scene = Scene.GetSceneByPath(absoluteScenePath);
+        LoadScene(scene, absoluteScenePath);
       }
     }
 
@@ -454,8 +494,9 @@ namespace WpfApplication1
     {
       if (_rightButtonHandler != null)
       {
-        var scene = Scene.GetSceneByPath(_rightButtonHandler.SceneLocation);
-        LoadScene(scene);
+        var absoluteScenePath = PathHelper.CombinePaths(CurrentSceneLocation, _rightButtonHandler.SceneLocation);
+        var scene = Scene.GetSceneByPath(absoluteScenePath);
+        LoadScene(scene, absoluteScenePath);
       }
     }
 
@@ -463,8 +504,9 @@ namespace WpfApplication1
     {
       if (_upButtonHandler != null)
       {
-        var scene = Scene.GetSceneByPath(_upButtonHandler.SceneLocation);
-        LoadScene(scene);
+        var absoluteScenePath = PathHelper.CombinePaths(CurrentSceneLocation, _upButtonHandler.SceneLocation);
+        var scene = Scene.GetSceneByPath(absoluteScenePath);
+        LoadScene(scene, absoluteScenePath);
       }
     }
 
@@ -472,8 +514,9 @@ namespace WpfApplication1
     {
       if (_downButtonHandler != null)
       {
-        var scene = Scene.GetSceneByPath(_downButtonHandler.SceneLocation);
-        LoadScene(scene);
+        var absoluteScenePath = PathHelper.CombinePaths(CurrentSceneLocation, _downButtonHandler.SceneLocation);
+        var scene = Scene.GetSceneByPath(absoluteScenePath);
+        LoadScene(scene, absoluteScenePath);
       }
     }
 
@@ -493,14 +536,15 @@ namespace WpfApplication1
       var image = new BitmapImage(new Uri(path));
       ClearScene();
       MainImage.Source = image;
+      CurrentSceneLocation = path;
     }
 
     private void OnOpenImageButtonCLick(object sender, RoutedEventArgs routedEventArgs)
     {
       var openFileDialog = new OpenFileDialog();
-      if (_lastSelectedPath != null && Directory.Exists(_lastSelectedPath))
+      if (CurrentSceneLocation != null && File.Exists(CurrentSceneLocation))
       {
-        openFileDialog.FileName = _lastSelectedPath;
+        openFileDialog.FileName = CurrentSceneLocation;
       }
 
       // Display the openFile dialog.
@@ -535,6 +579,9 @@ namespace WpfApplication1
 
     private void CreateNewToolTip(Image image, Point startPosition, Point endPosition)
     {
+      if (CurrentSceneLocation == null)
+        return;
+
       var startX = Math.Min(startPosition.X, endPosition.X);
       var startY = Math.Min(startPosition.Y, endPosition.Y);
       var lengthX = Math.Abs(endPosition.X - startPosition.X);
@@ -547,9 +594,9 @@ namespace WpfApplication1
       };
       // Default file extension
       // Filter files by extension
-      if (_lastSelectedPath != null && Directory.Exists(_lastSelectedPath))
+      if (CurrentSceneLocation != null && File.Exists(CurrentSceneLocation))
       {
-        openFileDialog.FileName = _lastSelectedPath;
+        openFileDialog.FileName = CurrentSceneLocation;
       }
 
       // Display the openFile dialog.
@@ -557,7 +604,10 @@ namespace WpfApplication1
       // OK button was pressed.
       if (result == System.Windows.Forms.DialogResult.OK)
       {
-        var tooltipHandler = _currentToolTipFactory.GetTooltipHandler(openFileDialog.FileName,
+        var sceneUri = new Uri(CurrentSceneLocation);
+        var referenceUri = new Uri(openFileDialog.FileName);
+
+        var tooltipHandler = _currentToolTipFactory.GetTooltipHandler(sceneUri.MakeRelativeUri(referenceUri).ToString(),
           new Point(startX/image.ActualWidth, startY/image.ActualHeight),
           new Point(lengthX/image.ActualWidth, lengthY/image.ActualHeight));
         var button = tooltipHandler.GetTooltipButton(image, MainGrid, _buttons, _buttonsHandlers);
@@ -599,6 +649,15 @@ namespace WpfApplication1
       prompt.AcceptButton = confirmation;
 
       return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
+    }
+  }
+
+  public static class PathHelper
+  {
+    public static string CombinePaths(string absolutePath, string relativePath)
+    {
+      var folderPath = absolutePath.Substring(0, Math.Max(absolutePath.LastIndexOf('\\'), absolutePath.LastIndexOf('/')));
+      return Path.Combine(folderPath, relativePath);
     }
   }
 }

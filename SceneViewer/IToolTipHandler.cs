@@ -13,8 +13,10 @@ namespace WpfApplication1
 
     public abstract Button GetTooltipButton(Image image, Grid grid, List<Button> buttons, List<ToolTipHandler> handlers);
 
-    public delegate void MyResponse(Scene scene);
+    public delegate void MyResponse(Scene scene, string path);
 
     public abstract void RegisterResponse(Button button, MyResponse response);
+
+    public abstract IToolTipHandler CreateCopy(string path = null);
   }
 }

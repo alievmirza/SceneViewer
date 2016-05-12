@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -9,7 +10,6 @@ namespace WpfApplication1
   [Serializable]
   public class Scene
   {
-    public string Location { get; set; }
     public string MediaLink { get; set; }
     public string Header { get; set; }
     public string Text { get; set; }
@@ -26,28 +26,57 @@ namespace WpfApplication1
 
     public static Scene GetSceneByPath(string path)
     {
-      if (File.Exists(path))
+      if (path.Contains(":/") || path.Contains(":\\"))
       {
-        FileStream fs = new FileStream(path, FileMode.Open);
-        Scene scene;
-        // Construct a BinaryFormatter and use it to serialize the data to the stream.
-        BinaryFormatter formatter = new BinaryFormatter();
-        try
+        if (File.Exists(path))
         {
-          scene = (Scene)formatter.Deserialize(fs);
+          FileStream fs = new FileStream(path, FileMode.Open);
+          Scene scene;
+          // Construct a BinaryFormatter and use it to serialize the data to the stream.
+          BinaryFormatter formatter = new BinaryFormatter();
+          try
+          {
+            scene = (Scene) formatter.Deserialize(fs);
+          }
+          catch (SerializationException ex)
+          {
+            Console.WriteLine("Failed to serialize. Reason: " + ex.Message);
+            throw;
+          }
+          finally
+          {
+            fs.Close();
+          }
+          return scene;
         }
-        catch (SerializationException ex)
-        {
-          Console.WriteLine("Failed to serialize. Reason: " + ex.Message);
-          throw;
-        }
-        finally
-        {
-          fs.Close();
-        }
-        return scene;
+        return null;
       }
-      return null;
+      else
+      {
+        path = PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, path);
+        if (File.Exists(path))
+        {
+          FileStream fs = new FileStream(path, FileMode.Open);
+          Scene scene;
+          // Construct a BinaryFormatter and use it to serialize the data to the stream.
+          BinaryFormatter formatter = new BinaryFormatter();
+          try
+          {
+            scene = (Scene)formatter.Deserialize(fs);
+          }
+          catch (SerializationException ex)
+          {
+            Console.WriteLine("Failed to serialize. Reason: " + ex.Message);
+            throw;
+          }
+          finally
+          {
+            fs.Close();
+          }
+          return scene;
+        }
+        return null;
+      }
     }
   }
 }

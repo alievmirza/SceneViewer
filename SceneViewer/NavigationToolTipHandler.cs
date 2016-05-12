@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -40,7 +41,31 @@ namespace WpfApplication1
       var scene = Scene.GetSceneByPath(SceneLocation);
 
       if (scene != null)
-        button.Click += (sender, args) => response(scene);
+        button.Click += (sender, args) =>
+        {
+          var absoluteScenePath = PathHelper.CombinePaths(
+          MainWindow.CurrentSceneLocation, SceneLocation);
+          response(scene, absoluteScenePath);
+        };
+    }
+
+    public override IToolTipHandler CreateCopy(string currentSceneLocation = null)
+    {
+      var handler = new NavigationToolTipHandler();
+      handler.RelativeLocation = RelativeLocation;
+      handler.RelativeSize = RelativeSize;
+      if (currentSceneLocation == null)
+      {
+        handler.SceneLocation = SceneLocation;
+      }
+      else
+      {
+        var nextSceneUri = new Uri(PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, SceneLocation));
+        var referenceUri = new Uri(currentSceneLocation);
+        handler.SceneLocation = referenceUri.MakeRelativeUri(nextSceneUri).ToString();
+      }
+
+      return handler;
     }
   }
 

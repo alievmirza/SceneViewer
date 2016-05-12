@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using Brushes = System.Windows.Media.Brushes;
 using Button = System.Windows.Controls.Button;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
@@ -49,28 +52,36 @@ namespace WpfApplication1
 
       if (scene != null)
       {
-        grid.Children.Add(new TextBlock()
-        {
-          Text = scene.Header,
-          VerticalAlignment = VerticalAlignment.Top
-        });
-        grid.Children.Add(new TextBlock()
-        {
-          Text = scene.Text,
-          VerticalAlignment = VerticalAlignment.Center
-        });
+        //grid.Children.Add(new TextBlock()
+        //{
+        //  Text = scene.Header,
+        //  VerticalAlignment = VerticalAlignment.Top
+        //});
+        //grid.Children.Add(new TextBlock()
+        //{
+        //  Text = scene.Text,
+        //  VerticalAlignment = VerticalAlignment.Center
+        //});
         if (scene.MediaLink != null)
         {
-          if (File.Exists(scene.MediaLink) &&
-            (scene.MediaLink.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-             scene.MediaLink.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-             scene.MediaLink.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-             scene.MediaLink.EndsWith(".gif", StringComparison.OrdinalIgnoreCase)))
+          var mediaPath = PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, scene.MediaLink);
+          if (File.Exists(mediaPath) &&
+              (mediaPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+               mediaPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+               mediaPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)))
+          {
+            var image = new Image
+            {
+              Source = new BitmapImage(new Uri(mediaPath))
+            };
+            grid.Children.Add(image);
+          }
+
+          if (mediaPath.EndsWith(".gif", StringComparison.OrdinalIgnoreCase))
           {
             MediaElement mediaElement = new MediaElement()
             {
-              Source = new Uri(scene.MediaLink),
-              VerticalAlignment = VerticalAlignment.Bottom
+              Source = new Uri(scene.MediaLink)
             };
             grid.Children.Add(mediaElement);
           }
@@ -83,7 +94,25 @@ namespace WpfApplication1
 
     public override void RegisterResponse(Button button, MyResponse response)
     {
-      
+    }
+
+    public override IToolTipHandler CreateCopy(string currentSceneLocation = null)
+    {
+      var handler = new ToolTipHandler();
+      handler.RelativeLocation = RelativeLocation;
+      handler.RelativeSize = RelativeSize;
+      if (currentSceneLocation == null)
+      {
+        handler.SceneLocation = SceneLocation;
+      }
+      else
+      {
+        var nextSceneUri = new Uri(PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, SceneLocation));
+        var referenceUri = new Uri(currentSceneLocation);
+        handler.SceneLocation = referenceUri.MakeRelativeUri(nextSceneUri).ToString();
+      }
+
+      return handler;
     }
   }
 
