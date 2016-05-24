@@ -51,7 +51,7 @@ namespace WpfApplication1
       {
         Background = Brushes.White,
         Width = mainImage.ActualWidth/2,
-        Height = mainImage.ActualHeight/2,
+        Height = mainImage.ActualHeight/(1.5),
       };
 
       var grid = new Grid();
@@ -64,6 +64,7 @@ namespace WpfApplication1
       RowDefinition gridRow3 = new RowDefinition();
 
       gridRow1.Height = new GridLength(grid.Height*0.10);
+      //gridRow2.Height = new GridLength(grid.Height*0.20);
 
       grid.RowDefinitions.Add(gridRow1);
       grid.RowDefinitions.Add(gridRow2);
@@ -106,8 +107,8 @@ namespace WpfApplication1
             MediaElement mediaElement = new MediaElement()
             {
               Source = new Uri(path),
-              HorizontalAlignment = HorizontalAlignment.Stretch,
-              VerticalAlignment = VerticalAlignment.Stretch,
+              HorizontalAlignment = HorizontalAlignment.Center,
+              VerticalAlignment = VerticalAlignment.Center,
             };
             MediaTimeline mediaTimeline = new MediaTimeline()
             {
