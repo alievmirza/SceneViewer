@@ -1,18 +1,21 @@
 ﻿<Window x:Class="ArtilleryApplication.Artillery"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Обзор орудий" Height="350" Width="525"
+        Title="Обзор орудий " Height="350" Width="525"
         Icon="resources/icon.ico"
         x:Name ="ApplicationArtillery">
     <Grid x:Name="MainGrid">
+
+
+
         <Image x:Name="MainImage" Margin="1.745,27.96,-1.745,-10">
         </Image>
-        
+
         <Button HorizontalAlignment="Center" VerticalAlignment="Top" Width="50" Margin="0,27.96,0,0" x:Name="UpButton" >
             <Image Source="resources/up-arrow.png" Height="40" Width="40">
             </Image>
         </Button>
-        
+
         <Button HorizontalAlignment="Left" VerticalAlignment="Center" Width="50" Height ="50"  Margin="10,10,10,10" x:Name="LeftButton" >
             <Image Source="resources/left-arrow.png" Height="40" Width="40">
             </Image>
@@ -31,28 +34,84 @@
 
         <ToolBar VerticalAlignment="Top" ToolBarTray.IsLocked ="True" x:Name="MainToolBar" OverflowMode="Never">
             <Menu ToolBar.OverflowMode="Never">
-                <MenuItem Header="Орудия">
-                    <MenuItem x:Name = "D30">
+                <MenuItem Header="Menu">
+                    <MenuItem x:Name = "OpenImageButton">
                         <MenuItem.Template>
                             <ControlTemplate>
-                                <Label Width="100">Д-30</Label>
+                                <Label>Open Image</Label>
                             </ControlTemplate>
                         </MenuItem.Template>
                     </MenuItem>
 
-                    <MenuItem x:Name = "A65">
+                    <MenuItem x:Name = "SaveSceneButton">
                         <MenuItem.Template>
                             <ControlTemplate>
-                                <Label>2А65</Label>
+                                <Label>Save Scene</Label>
                             </ControlTemplate>
                         </MenuItem.Template>
                     </MenuItem>
 
-
-                    <MenuItem x:Name = "Mt12">
+                    <MenuItem x:Name = "OpenSceneButton">
                         <MenuItem.Template>
                             <ControlTemplate>
-                                <Label>МТ-12</Label>
+                                <Label>Load Scene</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name ="ExitButton">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Exit</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="ToolTips">
+                    <MenuItem x:Name = "CreateContextToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create Context ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name = "CreateNavigationToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create Navigation ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name = "CreateDownToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Down' ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name ="CreateUpToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Up' ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name = "CreateRightToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Right' ToolTip</Label>
+                            </ControlTemplate>
+                        </MenuItem.Template>
+                    </MenuItem>
+
+                    <MenuItem x:Name ="CreateLeftToolTip">
+                        <MenuItem.Template>
+                            <ControlTemplate>
+                                <Label>Create 'Left' ToolTip</Label>
                             </ControlTemplate>
                         </MenuItem.Template>
                     </MenuItem>

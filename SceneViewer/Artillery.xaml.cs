@@ -6,9 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
@@ -19,12 +17,11 @@ using Label = System.Windows.Forms.Label;
 using Point = System.Windows.Point;
 using TextBox = System.Windows.Forms.TextBox;
 using ToolBar = System.Windows.Controls.ToolBar;
-using ToolTip = System.Windows.Controls.ToolTip;
 
 namespace ArtilleryApplication
 {
   /// <summary>
-  /// Interaction logic for Artillery.xaml
+  /// Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class Artillery
   {
@@ -46,7 +43,6 @@ namespace ArtilleryApplication
     private readonly NavigationToolTipHandlerFactory _navigationHandlerFactory;
     private readonly ToolTipHandler.ToolTipHandlerFactory _handlerFactory;
     private ToolTipHandler.ToolTipHandlerFactory _currentToolTipFactory;
-    private readonly string _exeFolderLocation;
 
     public Artillery()
     {
@@ -55,17 +51,18 @@ namespace ArtilleryApplication
 
       InitializeComponent();
 
+      ExitButton.Click += OnExitButtonClick;
+      OpenImageButton.Click += OnOpenImageButtonCLick;
+      SaveSceneButton.Click += OnSaveSceneButtonClick;
+      OpenSceneButton.Click += OnOpenSceneButtonClick;
       MainToolBar.Loaded += OnToolBarLoaded; //use this to disable weird things like overflow button in TooLBar
 
       ApplicationArtillery.KeyDown += OnKeyDown;
 
-      //TODO: add custom styles for this buttons
       LeftButton.Click += OnLeftClick;
       RightButton.Click += OnRightClick;
       UpButton.Click += OnUpClick;
       DownButton.Click += OnDownClick;
-
-      A65.Click += On2A65Clicked;
 
       _leftButtonHandler = null;
       _rightButtonHandler = null;
@@ -77,13 +74,18 @@ namespace ArtilleryApplication
       UpButton.Visibility = Visibility.Hidden;
       DownButton.Visibility = Visibility.Hidden;
 
-      var exeLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
-      _exeFolderLocation = exeLocation.Substring(0, exeLocation.LastIndexOf("\\", StringComparison.Ordinal));
-      OpenImage(_exeFolderLocation + "\\dummy.jpg");
+
 
       MainImage.Focus();
       MainGrid.SizeChanged += OnSizeChanged; //resize buttons
       MainImage.SizeChanged += OnImageSizeChanged;
+
+      CreateContextToolTip.Click += OnCreateContextToolTip;
+      CreateNavigationToolTip.Click += OnCreateNavigationToolTip;
+      CreateLeftToolTip.Click += OnCreateLeftToolTip;
+      CreateRightToolTip.Click += OnCreateRightToolTip;
+      CreateDownToolTip.Click += OnCreateDownToolTip;
+      CreateUpToolTip.Click += OnCreateUpToolTip;
 
       MainImage.MouseLeftButtonDown += OnMouseLeftButtonPressed;
       MainImage.MouseLeftButtonUp += OnMouseLeftButtonReleased;
@@ -91,13 +93,6 @@ namespace ArtilleryApplication
       _navigationHandlerFactory = new NavigationToolTipHandlerFactory();
       _handlerFactory = new ToolTipHandler.ToolTipHandlerFactory();
       _currentToolTipFactory = null;
-    }
-
-    private void On2A65Clicked(object sender, RoutedEventArgs e)
-    {
-      var path = _exeFolderLocation + "\\2A65\\Main.sc";
-      var scene = Scene.GetSceneByPath(path);
-      LoadScene(scene, path);
     }
 
     private void OnCreateUpToolTip(object sender, RoutedEventArgs e)
@@ -355,7 +350,7 @@ namespace ArtilleryApplication
 
 
       var sceneUri = new Uri(dlg.FileName);
-      var mediaUri = ((BitmapImage) MainImage.Source).UriSource;
+      var mediaUri = ((BitmapImage)MainImage.Source).UriSource;
       var mediaRelativeUri = sceneUri.MakeRelativeUri(mediaUri);
 
       var scene = new Scene
@@ -409,20 +404,20 @@ namespace ArtilleryApplication
       if (Math.Abs(e.PreviousSize.Height) < 0.000001 || Math.Abs(e.PreviousSize.Width) < 0.000001)
         return;
 
-        foreach (var button in _buttons)
-        {
-            button.Width = button.ActualWidth*e.NewSize.Width/e.PreviousSize.Width;
-            button.Height = button.ActualHeight*e.NewSize.Height/e.PreviousSize.Height;
-            var buttonAsToolTip = ((System.Windows.Controls.ToolTip) button.ToolTip);
-            buttonAsToolTip.Width = buttonAsToolTip.Width*e.NewSize.Width/
-                                                                       e.PreviousSize.Width;
-            buttonAsToolTip.Height = buttonAsToolTip.Height * e.NewSize.Height / e.PreviousSize.Height;
-            var grid = ((System.Windows.Controls.Grid) buttonAsToolTip.Content);
-            grid.Width = grid.Width * e.NewSize.Width /e.PreviousSize.Width;
+      foreach (var button in _buttons)
+      {
+        button.Width = button.ActualWidth * e.NewSize.Width / e.PreviousSize.Width;
+        button.Height = button.ActualHeight * e.NewSize.Height / e.PreviousSize.Height;
+        var buttonAsToolTip = ((System.Windows.Controls.ToolTip)button.ToolTip);
+        buttonAsToolTip.Width = buttonAsToolTip.Width * e.NewSize.Width /
+                                                                   e.PreviousSize.Width;
+        buttonAsToolTip.Height = buttonAsToolTip.Height * e.NewSize.Height / e.PreviousSize.Height;
+        var grid = ((Grid)buttonAsToolTip.Content);
+        grid.Width = grid.Width * e.NewSize.Width / e.PreviousSize.Width;
 
-            grid.Height = grid.Height * e.NewSize.Width /e.PreviousSize.Width;
-            
-            }
+        grid.Height = grid.Height * e.NewSize.Width / e.PreviousSize.Width;
+
+      }
     }
 
     private void OnMouseLeftButtonPressed(object sender, MouseButtonEventArgs mouseButtonEventArgs)
@@ -456,13 +451,13 @@ namespace ArtilleryApplication
     {
       var width = e.NewSize.Width;
       var height = e.NewSize.Height;
-      LeftButton.Width = width*_buttonWidthConstant;
+      LeftButton.Width = width * _buttonWidthConstant;
       LeftButton.Height = width * _buttonHeightConstant;
-      RightButton.Width = width*_buttonWidthConstant;
+      RightButton.Width = width * _buttonWidthConstant;
       RightButton.Height = width * _buttonHeightConstant;
-      UpButton.Width = width*_buttonWidthConstant;
+      UpButton.Width = width * _buttonWidthConstant;
       UpButton.Height = width * _buttonHeightConstant;
-      DownButton.Width = width*_buttonWidthConstant;
+      DownButton.Width = width * _buttonWidthConstant;
       DownButton.Height = width * _buttonHeightConstant;
 
       var imagePosition = MainImage.TransformToAncestor(MainGrid).Transform(new Point(0, 0));
@@ -470,8 +465,8 @@ namespace ArtilleryApplication
       for (var i = 0; i < _buttons.Count; i++)
       {
         var handler = _buttonsHandlers[i];
-        _buttons[i].Margin = new Thickness(imagePosition.X + MainImage.ActualWidth*handler.RelativeLocation.X,
-          imagePosition.Y + MainImage.ActualHeight*handler.RelativeLocation.Y, 0, 0);
+        _buttons[i].Margin = new Thickness(imagePosition.X + MainImage.ActualWidth * handler.RelativeLocation.X,
+          imagePosition.Y + MainImage.ActualHeight * handler.RelativeLocation.Y, 0, 0);
       }
     }
 
@@ -621,8 +616,8 @@ namespace ArtilleryApplication
         var referenceUri = new Uri(openFileDialog.FileName);
 
         var tooltipHandler = _currentToolTipFactory.GetTooltipHandler(sceneUri.MakeRelativeUri(referenceUri).ToString(),
-          new Point(startX/image.ActualWidth, startY/image.ActualHeight),
-          new Point(lengthX/image.ActualWidth, lengthY/image.ActualHeight));
+          new Point(startX / image.ActualWidth, startY / image.ActualHeight),
+          new Point(lengthX / image.ActualWidth, lengthY / image.ActualHeight));
         var button = tooltipHandler.GetTooltipButton(image, MainGrid, _buttons, _buttonsHandlers);
         _buttonsHandlers.Add(tooltipHandler);
         tooltipHandler.RegisterResponse(button, LoadScene);
@@ -645,8 +640,8 @@ namespace ArtilleryApplication
         Text = caption,
         StartPosition = FormStartPosition.CenterScreen
       };
-      Label textLabel = new Label() {Left = 50, Top = 20, Text = text};
-      TextBox textBox = new TextBox() {Left = 50, Top = 50, Width = 400};
+      Label textLabel = new Label() { Left = 50, Top = 20, Text = text };
+      TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
       System.Windows.Forms.Button confirmation = new System.Windows.Forms.Button()
       {
         Text = "Ok",
