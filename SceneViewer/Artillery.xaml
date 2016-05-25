@@ -11,22 +11,22 @@
         <Image x:Name="MainImage" Margin="1.745,27.96,-1.745,-10">
         </Image>
 
-        <Button HorizontalAlignment="Center" VerticalAlignment="Top" Width="50" Margin="0,27.96,0,0" x:Name="UpButton" >
+        <Button HorizontalAlignment="Center" VerticalAlignment="Top" Width="50" Margin="0,27.96,0,0" x:Name="UpButton" Background="Transparent">
             <Image Source="resources/up-arrow.png" Height="40" Width="40">
             </Image>
         </Button>
 
-        <Button HorizontalAlignment="Left" VerticalAlignment="Center" Width="50" Height ="50"  Margin="10,10,10,10" x:Name="LeftButton" >
+        <Button HorizontalAlignment="Left" VerticalAlignment="Center" Width="50" Height ="50"  Margin="10,10,10,10" x:Name="LeftButton" Background="Transparent">
             <Image Source="resources/left-arrow.png" Height="40" Width="40">
             </Image>
         </Button>
 
-        <Button  HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Margin="10,10,10,10" x:Name="RightButton">
+        <Button  HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Margin="10,10,10,10" x:Name="RightButton" Background="Transparent">
             <Image Source="resources/right-arrow.png" Height="40" Width="40">
             </Image>
         </Button>
 
-        <Button  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="75" Margin="10,10,10,10" x:Name="DownButton">
+        <Button  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="75" Margin="10,10,10,10" x:Name="DownButton" Background="Transparent">
             <Image Source="resources/down-arrow.png" Height="40" Width="40">
             </Image>
         </Button>
