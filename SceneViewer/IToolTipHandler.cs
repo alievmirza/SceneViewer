@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace WpfApplication1
+namespace ArtilleryApplication
 {
   [Serializable]
   public abstract class IToolTipHandler

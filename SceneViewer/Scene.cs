@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace WpfApplication1
+namespace ArtilleryApplication
 {
   [Serializable]
   public class Scene
@@ -53,7 +53,7 @@ namespace WpfApplication1
       }
       else
       {
-        path = PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, path);
+        path = PathHelper.CombinePaths(Artillery.CurrentSceneLocation, path);
         if (File.Exists(path))
         {
           FileStream fs = new FileStream(path, FileMode.Open);

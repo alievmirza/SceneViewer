@@ -21,12 +21,12 @@ using TextBox = System.Windows.Forms.TextBox;
 using ToolBar = System.Windows.Controls.ToolBar;
 using ToolTip = System.Windows.Controls.ToolTip;
 
-namespace WpfApplication1
+namespace ArtilleryApplication
 {
   /// <summary>
-  /// Interaction logic for MainWindow.xaml
+  /// Interaction logic for Artillery.xaml
   /// </summary>
-  public partial class MainWindow
+  public partial class Artillery
   {
     private List<Button> _buttons;
     private List<ToolTipHandler> _buttonsHandlers;
@@ -46,27 +46,26 @@ namespace WpfApplication1
     private readonly NavigationToolTipHandlerFactory _navigationHandlerFactory;
     private readonly ToolTipHandler.ToolTipHandlerFactory _handlerFactory;
     private ToolTipHandler.ToolTipHandlerFactory _currentToolTipFactory;
+    private readonly string _exeFolderLocation;
 
-    public MainWindow()
+    public Artillery()
     {
       _buttons = new List<Button>();
       _buttonsHandlers = new List<ToolTipHandler>();
 
       InitializeComponent();
 
-      ExitButton.Click += OnExitButtonClick;
-      OpenImageButton.Click += OnOpenImageButtonCLick;
-      SaveSceneButton.Click += OnSaveSceneButtonClick;
-      OpenSceneButton.Click += OnOpenSceneButtonClick;
       MainToolBar.Loaded += OnToolBarLoaded; //use this to disable weird things like overflow button in TooLBar
 
-      ApplicationMainWindow.KeyDown += OnKeyDown;
+      ApplicationArtillery.KeyDown += OnKeyDown;
 
       //TODO: add custom styles for this buttons
       LeftButton.Click += OnLeftClick;
       RightButton.Click += OnRightClick;
       UpButton.Click += OnUpClick;
       DownButton.Click += OnDownClick;
+
+      A65.Click += On2A65Clicked;
 
       _leftButtonHandler = null;
       _rightButtonHandler = null;
@@ -77,19 +76,14 @@ namespace WpfApplication1
       RightButton.Visibility = Visibility.Hidden;
       UpButton.Visibility = Visibility.Hidden;
       DownButton.Visibility = Visibility.Hidden;
-       
-      
+
+      var exeLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
+      _exeFolderLocation = exeLocation.Substring(0, exeLocation.LastIndexOf("\\", StringComparison.Ordinal));
+      OpenImage(_exeFolderLocation + "\\dummy.jpg");
 
       MainImage.Focus();
       MainGrid.SizeChanged += OnSizeChanged; //resize buttons
       MainImage.SizeChanged += OnImageSizeChanged;
-
-      CreateContextToolTip.Click += OnCreateContextToolTip;
-      CreateNavigationToolTip.Click += OnCreateNavigationToolTip;
-      CreateLeftToolTip.Click += OnCreateLeftToolTip;
-      CreateRightToolTip.Click += OnCreateRightToolTip;
-      CreateDownToolTip.Click += OnCreateDownToolTip;
-      CreateUpToolTip.Click += OnCreateUpToolTip;
 
       MainImage.MouseLeftButtonDown += OnMouseLeftButtonPressed;
       MainImage.MouseLeftButtonUp += OnMouseLeftButtonReleased;
@@ -97,6 +91,13 @@ namespace WpfApplication1
       _navigationHandlerFactory = new NavigationToolTipHandlerFactory();
       _handlerFactory = new ToolTipHandler.ToolTipHandlerFactory();
       _currentToolTipFactory = null;
+    }
+
+    private void On2A65Clicked(object sender, RoutedEventArgs e)
+    {
+      var path = _exeFolderLocation + "\\2A65\\Main.sc";
+      var scene = Scene.GetSceneByPath(path);
+      LoadScene(scene, path);
     }
 
     private void OnCreateUpToolTip(object sender, RoutedEventArgs e)

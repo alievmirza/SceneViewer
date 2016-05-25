@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace WpfApplication1
+namespace ArtilleryApplication
 {
   [Serializable]
   public class NavigationToolTipHandler : ToolTipHandler
@@ -44,7 +44,7 @@ namespace WpfApplication1
         button.Click += (sender, args) =>
         {
           var absoluteScenePath = PathHelper.CombinePaths(
-          MainWindow.CurrentSceneLocation, SceneLocation);
+          Artillery.CurrentSceneLocation, SceneLocation);
           response(scene, absoluteScenePath);
         };
     }
@@ -60,7 +60,7 @@ namespace WpfApplication1
       }
       else
       {
-        var nextSceneUri = new Uri(PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, SceneLocation));
+        var nextSceneUri = new Uri(PathHelper.CombinePaths(Artillery.CurrentSceneLocation, SceneLocation));
         var referenceUri = new Uri(currentSceneLocation);
         handler.SceneLocation = referenceUri.MakeRelativeUri(nextSceneUri).ToString();
       }

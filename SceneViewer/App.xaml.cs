@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace WpfApplication1
+namespace ArtilleryApplication
 {
   /// <summary>
   /// Interaction logic for App.xaml

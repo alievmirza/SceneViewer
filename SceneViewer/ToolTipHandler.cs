@@ -17,7 +17,7 @@ using Point = System.Windows.Point;
 using ToolTip = System.Windows.Controls.ToolTip;
 using Label = System.Windows.Controls.Label;
 
-namespace WpfApplication1
+namespace ArtilleryApplication
 {
   [Serializable]
   public class ToolTipHandler : IToolTipHandler
@@ -95,7 +95,7 @@ namespace WpfApplication1
 
         if (scene.MediaLink != null)
         {
-          var path = PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, scene.MediaLink);
+          var path = PathHelper.CombinePaths(Artillery.CurrentSceneLocation, scene.MediaLink);
 
           if (File.Exists(path) &&
               (path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
@@ -144,7 +144,7 @@ namespace WpfApplication1
       }
       else
       {
-        var nextSceneUri = new Uri(PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, SceneLocation));
+        var nextSceneUri = new Uri(PathHelper.CombinePaths(Artillery.CurrentSceneLocation, SceneLocation));
         var referenceUri = new Uri(currentSceneLocation);
         handler.SceneLocation = referenceUri.MakeRelativeUri(nextSceneUri).ToString();
       }

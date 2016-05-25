@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Controls;
 
-namespace WpfApplication1
+namespace ArtilleryApplication
 {
   [Serializable]
   public class DirectionToolTipHandler : IToolTipHandler
@@ -27,7 +27,7 @@ namespace WpfApplication1
       }
       else
       {
-        var nextSceneUri = new Uri(PathHelper.CombinePaths(MainWindow.CurrentSceneLocation, SceneLocation));
+        var nextSceneUri = new Uri(PathHelper.CombinePaths(Artillery.CurrentSceneLocation, SceneLocation));
         var referenceUri = new Uri(sceneLocation);
         handler.SceneLocation = referenceUri.MakeRelativeUri(nextSceneUri).ToString();
       }

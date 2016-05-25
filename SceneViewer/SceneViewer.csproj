@@ -7,8 +7,8 @@
     <ProjectGuid>{92F4CA64-35C2-4001-9E2D-0D669F619ACE}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WpfApplication1</RootNamespace>
-    <AssemblyName>WpfApplication1</AssemblyName>
+    <RootNamespace>ArtilleryApplication</RootNamespace>
+    <AssemblyName>Artillery</AssemblyName>
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -54,7 +54,7 @@
     <Compile Include="NavigationToolTipHandler.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="ToolTipHandler.cs" />
-    <Page Include="MainWindow.xaml">
+    <Page Include="Artillery.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -62,8 +62,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Artillery.xaml.cs">
+      <DependentUpon>Artillery.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -86,6 +86,9 @@
     <Resource Include="resources\right.png" />
     <Resource Include="resources\up-arrow.png" />
     <Resource Include="resources\up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
