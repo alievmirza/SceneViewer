@@ -63,7 +63,9 @@ namespace ArtilleryApplication
       RowDefinition gridRow2 = new RowDefinition();
       RowDefinition gridRow3 = new RowDefinition();
 
-      gridRow1.Height = new GridLength(grid.Height*0.10);
+      gridRow1.Height = GridLength.Auto;
+      gridRow2.Height = GridLength.Auto;
+      gridRow3.Height = GridLength.Auto;
 
       grid.RowDefinitions.Add(gridRow1);
       grid.RowDefinitions.Add(gridRow2);
@@ -114,9 +116,8 @@ namespace ArtilleryApplication
               Source = new Uri(path)
             };
 
-            Grid.SetRow(mediaElement, 1);
+            Grid.SetRow(mediaElement, 2);
             Grid.SetColumn(mediaElement, 0);
-            Grid.SetRowSpan(mediaElement, 2);
             grid.Children.Add(mediaElement);
           }
         }
